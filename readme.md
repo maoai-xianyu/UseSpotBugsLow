@@ -24,7 +24,9 @@ spotbugs 'com.github.spotbugs:spotbugs:4.5.0'
 定义 task 的几种方式
 
 1. task 创建
-2. tasks.reg
+2. tasks.create
+3. tasks.withType
+4. tasks.register
 
 ```
 import com.github.spotbugs.snom.SpotBugsTask
@@ -175,7 +177,7 @@ spotbugs.gradle
 
 dependencies {
     //spotbugs configurations.spotbugsPlugins.dependencies
-    //spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+    //spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.8.0'
 }
 
 def qualityConfigDir = "$project.rootDir/config/quality"
