@@ -1,0 +1,44 @@
+<!-- This file specifies a spotbugs filter for excluding reports that
+     should not be considered errors.
+
+     The format of this file is documented at:
+
+       https://spotbugs.readthedocs.io/en/latest/filter.html
+
+     When possible, please specify the full names of the bug codes,
+     using the pattern attribute, to make it clearer what reports are
+     being suppressed.  You can find a listing of codes at:
+
+       https://spotbugs.readthedocs.io/en/latest/bugDescriptions.html
+  -->
+
+<FindBugsFilter>
+
+    <!-- http://stackoverflow.com/questions/7568579/eclipsefindbugs-exclude-filter-files-doesnt-work -->
+
+    <Match>
+        <Class name="~.*\.R\$.*"/>
+    </Match>
+
+    <!--忽略禁止对静态变量进行操作-->
+    <Match>
+        <Class name="~.*"/>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="DM_DEFAULT_ENCODING" />
+    </Match>
+
+    <Match>
+        <Class name="~.*\.Manifest\$.*"/>
+    </Match>
+    <!-- All bugs in test classes, except for JUnit-specific bugs -->
+    <Match>
+        <Class name="~.*\.*Test"/>
+        <Not>
+            <Bug code="IJU"/>
+        </Not>
+    </Match>
+
+</FindBugsFilter>
