@@ -3,9 +3,9 @@ import com.github.spotbugs.snom.SpotBugsTask
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
-project.extensions.extraProperties.set('SpotBugsTask', SpotBugsTask)
+//project.extensions.extraProperties.set('SpotBugsTask', SpotBugsTask)
 apply plugin: 'com.github.spotbugs'
-apply from: '../app/spotbugs.gradle'
+//apply from: '../app/spotbugs.gradle'
 
 
 android {
@@ -70,9 +70,8 @@ spotbugs {
 }
 
 // 方式一：task创建，生成 spotbugsMain task
-
 /*task spotbugsMain(type: SpotBugsTask) {
-    dependsOn 'assembleDebug'
+    dependsOn 'compileDebugSources'
     group = "spotbugs"
     classes = files("${project.buildDir}/intermediates/javac") + files("${project.buildDir}/tmp/kotlin-classes")
     //classes = files("${project.buildDir}/intermediates/javac")
@@ -80,26 +79,33 @@ spotbugs {
     println "-----$projectDir.absolutePath"
 
     reports {
-        xml.enabled = false
 
         html.configure {
             required = true
             outputLocation = file("$reportsConfigDir/spotbugs/spotbugs.html")
             stylesheet = 'fancy-hist.xsl'
         }
+
+        xml {
+            required = true
+            outputLocation = file("$reportsConfigDir/spotbugs/spotbugs.xml")
+        }
+
+
     }
 }*/
 
 
 // 方式二：tasks.withType 创建，会生成 spotbugsDebug  和 spotbugsRelease 两个 task
-//tasks.withType(SpotBugsTask) {
+/*tasks.withType(SpotBugsTask) {
 
 
 // 方式三：tasks.create 创建，会生成 spotbugsMain task
 //tasks.create('spotbugsMain',SpotBugsTask) {
 
 // 方式三：tasks.register 创建，会生成 spotbugsMain task
-/*tasks.register('spotbugsMain', SpotBugsTask) {
+//tasks.register('spotbugsMain', SpotBugsTask) {
+
     dependsOn 'assembleDebug'
     group = "spotbugs"
     // 检测二进制文件路径
@@ -109,6 +115,7 @@ spotbugs {
     // (xml is the one that's enabled by default).
     reports {
 
+
         xml.enabled = false
 
         html.configure {
@@ -118,3 +125,37 @@ spotbugs {
         }
     }
 }*/
+
+
+def spotbugsReports = ['spotbugsHtml', 'spotbugsXml']
+
+spotbugsReports.each {reportType ->
+
+    tasks.register(reportType, SpotBugsTask) {
+
+        dependsOn 'assembleDebug'
+        group = "spotbugs"
+        // 检测二进制文件路径
+        classes = files("${project.buildDir}/intermediates/javac") + files("${project.buildDir}/tmp/kotlin-classes")
+
+        // Only one report format is supported. Html is easier to read, so let's use that
+        // (xml is the one that's enabled by default).
+        reports {
+
+            if (reportType == 'spotbugsHtml') {
+                html.configure {
+                    required = true
+                    outputLocation = file("$reportsConfigDir/spotbugs/spotbugs.html")
+                    stylesheet = 'fancy-hist.xsl'
+                }
+
+            }else {
+                xml {
+                    required = true
+                    outputLocation = file("$reportsConfigDir/spotbugs/spotbugs.xml")
+                }
+            }
+        }
+    }
+}
+
